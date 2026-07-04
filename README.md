@@ -30,7 +30,7 @@ install.packages("cepiweek")
 
 \# install.packages("devtools")
 
-devtools::install_github("DeginaDaniel/cepiweek")
+devtools::install_github("DanielDegina/cepiweek")
 
 
 
@@ -38,7 +38,7 @@ devtools::install_github("DeginaDaniel/cepiweek")
 
 \# install.packages("remotes")
 
-remotes::install_github("DeginaDaniel/cepiweek")
+remotes::install_github("DanielDegina/cepiweek")
 
 
 
