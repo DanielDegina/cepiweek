@@ -4,22 +4,29 @@
 \alias{cepiweek}
 \title{Generate Continuous Epidemiological Week Index for a Date Column}
 \usage{
-cepiweek(data, col_date, start = NULL, format = "dmy")
+cepiweek(data, col_date, start = NULL, format = "dmy", quiet = FALSE)
 }
 \arguments{
 \item{data}{A data frame containing the date column.}
 
-\item{col_date}{Name of the date column (string).}
+\item{col_date}{Name of the date column (string). The column can be of class
+\code{Date}, \code{POSIXct} or \code{character}.}
 
-\item{start}{Optional start date for counting weeks (Date or string).
-Defaults to the minimum date in the column \code{col_date}.}
+\item{start}{Optional start date for counting weeks (Date or string, read with the
+same \code{format} as the column). Defaults to the minimum date in the column \code{col_date}.}
 
 \item{format}{Optional date format flag. Use \code{"mdy"} if all dates are in
 month-day-year format (common in US). Defaults to \code{"dmy"}/\code{"ymd"} which handles
 day-month-year or year-month-day formats.}
+
+\item{quiet}{Logical. If \code{FALSE} (default), a warning reports the number of values
+that could not be converted to a date. Set to \code{TRUE} to silence it.}
 }
 \value{
-A data frame with an added \code{cepiweek} column containing continuous week indices.
+A data frame with an added \code{cepiweek} column containing continuous week
+indices. The date column is returned as class \code{Date}. Missing or non-convertible
+dates are returned as \code{NA} (\code{NA_Date_} in the date column and \code{NA_integer_}
+in \code{cepiweek}).
 }
 \description{
 This function adds a continuous epidemiological week index to a data frame
@@ -36,27 +43,37 @@ date in the column is used. The function also allows specifying the \code{format
 dates to handle different conventions (day-month-year vs month-day-year).
 \itemize{
 \item The function automatically replaces \code{/} with \code{-} for consistency.
-\item If any dates cannot be converted, the function stops with an error.
+\item Missing values, empty strings, \code{"NA"} and \code{"N/A"} are treated as missing dates.
+\item Dates that cannot be converted do not stop the function: they are set to \code{NA}
+and reported in a warning (unless \code{quiet = TRUE}).
+\item Date-times (for example \code{"2024-01-15 10:30:00"}) are accepted; the time is ignored.
 \item A warning is issued if the \code{start} date is after the earliest date in the column.
 \item Continuous weeks are aligned to Mondays.
 }
 }
 \examples{
 # Standard dmy/ymd dates
-k <- data.frame(
+k = data.frame(
   num = c(1, 2, 3),
   date = c("15-01-2024", "12/02/2025", "2026-08-01")
 )
 cepiweek(k, col_date = "date")
 
 # American format mm-dd-yyyy
-k2 <- data.frame(
+k2 = data.frame(
   num = c(1, 2, 3),
   date = c("01/15/2024", "02-12-2025", "08/01/2026")
 )
 cepiweek(k2, col_date = "date", format = "mdy")
 
+# Missing and non-convertible dates give NA instead of an error
+k3 = data.frame(
+  num = 1:4,
+  date = c("15-01-2024", NA, "not a date", "2024-02-05")
+)
+cepiweek(k3, col_date = "date", quiet = TRUE)
+
 }
 \seealso{
-\href{https://github.com/DeginaDaniel/cepiweek}{GitHub page of the package}.
+\href{https://github.com/DanielDegina/cepiweek}{GitHub page of the package}.
 }
